@@ -62,11 +62,12 @@ public class MagicSquare implements MagicSquareInterface {
             scan.close();
             System.exit(2);
         }
-        
         scan.close();
+
+        matrixArray = readMatrix(filename);
     }
     
-    public MagicSquare(String filename, int dimension) {
+    public MagicSquare(String filename, int dimension) throws IOException {
         
     }
 
@@ -116,16 +117,14 @@ public class MagicSquare implements MagicSquareInterface {
     private int[][] readMatrix(String filename) throws FileNotFoundException {
         File file = new File(filename);
 
-        Scanner dimensionReader = new Scanner(file);
-        int dimension = dimensionReader.nextInt();
-        dimensionReader.close();
+        Scanner linescan = new Scanner(file);
+        int dimension = linescan.nextInt();
+        linescan.nextLine(); // After the dimension has been retrieved, go to the next line where the magic square begins
 
         int[][] matrix = new int[dimension][dimension];
 
         int lineCount = 0;
-        int numCount = 0;
-        Scanner linescan = new Scanner(file);
-        linescan.nextLine(); // Ignore the line which reads only the magic square's dimension
+        int numCount;
         while (linescan.hasNextLine()) {
             String line = linescan.nextLine();
             Scanner numScan = new Scanner(line);
@@ -144,7 +143,10 @@ public class MagicSquare implements MagicSquareInterface {
     }
 
     private void writeMatrix(int[][] matrix, String filename) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        File file = new File(filename);
+        file.createNewFile();
+        
+        
     }
 
     /**
