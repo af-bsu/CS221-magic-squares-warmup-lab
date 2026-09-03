@@ -45,9 +45,7 @@ public interface MagicSquareInterface {
 	 * 
 	 * @return true if matrix is a magic square, else false
 	 */
-	public boolean isMagicSquare() {
-		
-	};
+	public boolean isMagicSquare();
 	
 	/**
 	 * Return a copy of the matrix (whether read from file 
@@ -56,9 +54,7 @@ public interface MagicSquareInterface {
 	 * 
 	 * @return 2D array of ints that may or may not be a valid magic square
 	 */
-	public int[][] getMatrix() {
-
-	};
+	public int[][] getMatrix();
 	
 	/**
 	 * Return a string formatted as in these examples:
@@ -76,8 +72,6 @@ public interface MagicSquareInterface {
 	 *    
 	 * @return formatted string showing the matrix and whether it is a valid magic square
 	 */
-	public String toString() {
-		String header = "The matrix";
-
-	};
+    @Override
+	public String toString();
 }
