@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
 /**
  * Javadoc copied from the interface file for easy access:
  * 
@@ -38,7 +43,103 @@
  */
 
 public class MagicSquare implements MagicSquareInterface {
+    private int[][] matrixArray;
+    private boolean isValidSquare;
+
+    /**
+     * 
+     * @param filename File name for the method to attempt to open and read
+     * @throws FileNotFoundException
+     */
+    public MagicSquare(String filename) throws FileNotFoundException {
+        Scanner scan = null; // Variable scope is important ;)
+        try {
+            scan = new Scanner(new File(filename));
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File does not exist");
+            printUsageStatement();
+            scan.close();
+            System.exit(2);
+        }
+        
+        scan.close();
+    }
+    
+    public MagicSquare(String filename, int dimension) {
+        
+    }
+
+    @Override
     public boolean isMagicSquare() {
-        return true;
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int[][] getMatrix() {
+        return matrixArray;
+    }
+
+    @Override
+    public String toString() {
+        String header = "The matrix\n";
+        String footer = "\nis a magic square.";
+        if (!isValidSquare) {
+            footer = "\nis not a magic square.";
+        }
+
+        String matrixString;
+        
+    }
+
+    /**
+     * 
+     * @param filename
+     * @return a final two-dimensional integer array that represents the matrix (magic square)
+     * @throws FileNotFoundException
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    private int[][] readMatrix(String filename) throws FileNotFoundException {
+        File file = new File(filename);
+
+        Scanner dimensionReader = new Scanner(file);
+        int dimension = dimensionReader.nextInt();
+        dimensionReader.close();
+
+        int[][] matrix = new int[dimension][dimension];
+
+        int lineCount = 0;
+        int numCount = 0;
+        Scanner linescan = new Scanner(file);
+        linescan.nextLine(); // Ignore the line which reads only the magic square's dimension
+        while (linescan.hasNextLine()) {
+            String line = linescan.nextLine();
+            Scanner numScan = new Scanner(line);
+            numScan.useDelimiter("//s+");
+            numCount = 0;
+            while (numScan.hasNext()) {
+                matrix[lineCount][numCount] = numScan.nextInt();
+                numCount++;
+            }
+            lineCount++;
+            numScan.close();
+        }
+
+        linescan.close();
+        return matrix;
+    }
+
+    private void writeMatrix(int[][] matrix, String filename) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Prints a usage statement using two lines for each use case.
+     * Ignores cases where the check flag is used with a size argument
+     * as the latter can be safely ignored as long as the provided
+     * filename exists in the working directory.
+     */
+    private static void printUsageStatement() {
+        System.out.println("Usage: java MagicSquareDriver -check <filename>");
+        System.out.println("       java MagicSquareDriver -create <filename> <size>");
     }
 }
