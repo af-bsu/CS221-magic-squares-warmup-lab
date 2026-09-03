@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Driver class to check or create magic squares.
@@ -6,27 +8,62 @@
  */
 public class MagicSquareDriver {
     public static void main(String[] args) {
-        // Define variables
-        // String filename = args[1];
+        // Authenticate number of arguments - this needs to be done before variable declaration
+        if (args.length < 2 || args.length > 3) {
+            System.out.println("Error: Lack or excess of arguments");
+            printUsageStatement();
+            System.exit(1);
+        }
 
-        // // Authenticate flags
-        // switch (args[0]) {
-        //     default -> {
-        //         System.out.println("Error: Incorrect use or lack of mandatory flags");
-        //         printUsageStatement();
-        //         System.exit(1);
-        //     }
-        // }
+        String flag = args[0];
+        String filename = args[1];
+        int size = 0;
+        MagicSquare square;
 
-        // Authenticate size if creating
-        // Conditional summary: if creating a magic square and the specified size is not odd or three (3) or greater, exit
-        // if (creatingMatrix && ( (Integer.parseInt(args[2]) % 2 == 0) || (Integer.parseInt(args[2]) < 3) )) {
-        //     System.out.println("Error: Specified size for magic square is either not odd, less than three (3), or both");
-        //     printUsageStatement();
-        //     System.exit(3);
-        // }
+        // Authenticate flags
+        if ( (!flag.equals("-check") && !flag.equals("-create")) || (flag.equals("-create") && args.length != 3) ) {
+            System.out.println("Error: Incorrect use or lack of mandatory flags");
+            printUsageStatement();
+            System.exit(2);
+        }
 
+        // Checking sequence (size argument gets ignored even if provided)
+        if (flag.equals("-check")) {
+            try {
+                square = new MagicSquare(filename);
+                System.out.println(square.toString());
+            } catch (FileNotFoundException e) {
+                System.out.println("Error: File does not exist or is not in the expected format");
+                printUsageStatement();
+                System.exit(3);
+            }
+        }
 
+        // Creating sequence
+        if(flag.equals("-create")) {
+            try {
+                size = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Specified size for magic square is not a number");
+                printUsageStatement();
+                System.exit(4);
+            }
+
+            if (size % 2 == 0 || size < 3) {
+                System.out.println("Error: Specified size for magic square is either not odd, less than three (3), or both");
+                printUsageStatement();
+                System.exit(5);
+            }
+
+            try {
+                square = new MagicSquare(filename, size);
+                System.out.println(square.toString());
+            } catch (IOException e) {
+                System.out.println("Error: Could not write to file " + filename);
+                printUsageStatement();
+                System.exit(6);
+            }
+        }
     }
 
     /**
@@ -34,11 +71,9 @@ public class MagicSquareDriver {
      * Ignores cases where the check flag is used with a size argument
      * as the latter can be safely ignored as long as the provided
      * filename exists in the working directory.
-     * 
-     * @author Amira Freeman
      */
-//     private static void printUsageStatement() {
-//         System.out.println("Usage: java MagicSquareDriver -check <filename>");
-//         System.out.println("       java MagicSquareDriver -create <filename> <size>");
-//     }
+    private static void printUsageStatement() {
+        System.out.println("Usage: java MagicSquareDriver -check <filename>");
+        System.out.println("       java MagicSquareDriver -create <filename> <size>");
+    }
 }

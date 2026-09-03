@@ -1,8 +1,8 @@
 ****************
-* Project number/name
-* Class
-* Date
-* Your name
+* Magic Squares (warmup project)
+* Computer Science II [CS221]
+* 2026-09-03
+* Amira Freeman
 **************** 
 
 OVERVIEW:

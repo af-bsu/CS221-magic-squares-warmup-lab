@@ -1,162 +1,261 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Javadoc copied from the interface file for easy access:
  * 
- * Methods required for a class that validates
- * or creates magic squares in files with format:
- *   dimensionN
- *   v1 v2 ... vn
- *   ...
- *   vn1 vn2 ... vnn
- * e.g.
- *   3
- *   4 9 2
- *   3 5 7
- *   8 1 6
  * 
- * Two constructors are required.
- * 
- * The first constructor takes a filename, only,
- * and attempts to read that file. If the file
- * cannot be opened or is not in the correct
- * format, a FileNotFoundException should be thrown.
- *   public MagicSquare(String filename) throws FileNotFoundException
- * This constructor is required to call a private
- * utility method
- *   private int[][] readMatrix(String filename) throws FileNotFoundException
- * to open and read the file into a 2D int array.
- * 
- * The second constructor takes a filename and
- * an int for the dimension N of a new NxN magic
- * square. A generated matrix should be written
- * in the required format to a file with the given
- * name.
- *   public MagicSquare(String filename, int dimension) throws IOException
- * This constructor is required to call a private
- * utility method
- *   private void writeMatrix(int[][] matrix, String filename) throws IOException
- * to write the matrix to the file.
+ * @author Amira Freeman
  */
-
+@SuppressWarnings("OverridableMethodCallInConstructor")
 public class MagicSquare implements MagicSquareInterface {
     private int[][] matrixArray;
     private boolean isValidSquare;
 
     /**
+     * MagicSquare constructor for when the user is reading and verifying
+     * a magic square from a specified file.
      * 
      * @param filename File name for the method to attempt to open and read
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the file does not exist or cannot be opened
      */
-    @SuppressWarnings("null")
     public MagicSquare(String filename) throws FileNotFoundException {
-        Scanner scan = null; // Variable scope is important ;)
-        try {
-            scan = new Scanner(new File(filename));
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File does not exist");
-            printUsageStatement();
-            scan.close();
-            System.exit(2);
-        }
-        scan.close();
-
         matrixArray = readMatrix(filename);
+        isValidSquare = isMagicSquare();
     }
-    
+
+    /**
+     * MagicSquare constructor for when the user is generating and writing
+     * a magic square of a specified size to a specified file path.
+     * 
+     * @param filename File name which the generated square should be written to
+     * @param dimension Size or dimension (known internally as 'n') of the (n x n) magic square to generate
+     * @throws IOException if the file is not writable or creatable
+     */
     public MagicSquare(String filename, int dimension) throws IOException {
-        
+        matrixArray = generateMatrix(dimension);
+        isValidSquare = isMagicSquare();
+        writeMatrix(matrixArray, filename);
     }
 
     @Override
     public boolean isMagicSquare() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int dimension = matrixArray.length;
+        int magicNumber = (dimension * (dimension * dimension + 1)) / 2;
+
+        if (dimension == 0) {
+            return false;
+        }
+
+        // Not a magic square if its dimensions are not equal (1:1)
+        for (int row = 0; row < dimension; row++) {
+            if (matrixArray[row] == null || matrixArray[row].length != dimension) {
+                return false;
+            }
+        }
+
+        // Boolean arrays are weird. They're easy to work with though.
+        boolean[] seen = new boolean[dimension * dimension + 1];
+        for (int row = 0; row < dimension; row++) {
+            for (int col = 0; col < dimension; col++) {
+                int value = matrixArray[row][col];
+                if (value < 1 || value > dimension * dimension || seen[value]) {
+                    return false;
+                }
+                seen[value] = true;
+            }
+        }
+
+        // Not a magic square if even a single row sum is not the magic number
+        for (int row = 0; row < dimension; row++) {
+            int rowSum = 0;
+            for (int col = 0; col < dimension; col++) {
+                rowSum += matrixArray[row][col];
+            }
+            if (rowSum != magicNumber) {
+                return false;
+            }
+        }
+
+        // Not a magic square if even a single column sum is not the magic number
+        for (int col = 0; col < dimension; col++) {
+            int colSum = 0;
+            for (int row = 0; row < dimension; row++) {
+                colSum += matrixArray[row][col];
+            }
+            if (colSum != magicNumber) {
+                return false;
+            }
+        }
+
+        // Top-left to bottom-right diagonal sum
+        int diagonalSum = 0;
+        for (int position = 0; position < dimension; position++) {
+            diagonalSum += matrixArray[position][position];
+        }
+        if (diagonalSum != magicNumber) {
+            return false;
+        }
+
+        // Top-right to bottom-left diagonal sum
+        diagonalSum = 0;
+        for (int position = 0; position < dimension; position++) {
+            diagonalSum += matrixArray[position][dimension - position - 1];
+        }
+
+        return diagonalSum == magicNumber;
     }
 
     @Override
     public int[][] getMatrix() {
-        return matrixArray;
+        // Return a COPY of the matrix... nearly got me there...
+        int[][] copy = new int[matrixArray.length][];
+        for (int row = 0; row < matrixArray.length; row++) {
+            copy[row] = matrixArray[row].clone();
+        }
+
+        return copy;
     }
 
     @Override
     public String toString() {
-        String header = "The matrix\n";
-        String footer = "\nis a magic square.";
+        // I didn't know StringBuilder was a class until now. This helps bring resource allocation down since String objects are immutable
+        StringBuilder matrixString = new StringBuilder();
+
+        String footer = "is a magic square.";
         if (!isValidSquare) {
-            footer = "\nis not a magic square.";
+            footer = "is not a magic square.";
         }
 
-        // Not an ideal solution but it's my best for now
-        String matrixString = "";
+        matrixString.append("The matrix\n");
         for (int i = 0; i < matrixArray.length; i++) {
-            matrixString += "\t";
-            for (int j = 0; j < matrixArray.length; j++) {
-                matrixString += matrixArray[i][j];
+            matrixString.append("\t");
+            for (int j = 0; j < matrixArray[i].length; j++) {
+                matrixString.append(matrixArray[i][j]);
                 if (j < matrixArray.length - 1) {
-                    matrixString += " ";
+                    matrixString.append(" ");
                 } else {
-                    matrixString += "\n";
+                    matrixString.append("\n");
                 }
             }
         }
+        matrixString.append(footer);
 
-        String finalMatrixString = header + matrixString + footer;
-        return finalMatrixString;
+        return matrixString.toString();
     }
 
     /**
      * 
-     * @param filename
-     * @return a final two-dimensional integer array that represents the matrix (magic square)
-     * @throws FileNotFoundException
+     * 
+     * @param filename File name which the magic square is being read from
+     * @return A final two-dimensional integer array that represents the matrix (magic square)
+     * @throws FileNotFoundException if the file does not exist or cannot be opened
      */
     @SuppressWarnings("ConvertToTryWithResources")
     private int[][] readMatrix(String filename) throws FileNotFoundException {
         File file = new File(filename);
-
         Scanner linescan = new Scanner(file);
-        int dimension = linescan.nextInt();
-        linescan.nextLine(); // After the dimension has been retrieved, go to the next line where the magic square begins
 
-        int[][] matrix = new int[dimension][dimension];
+        try {
+            // Scanner cursors are SUPER weird. It took me a while to remember that nextLine() consumes the newline operator
+            int dimension = Integer.parseInt(linescan.nextLine().trim());
+            int[][] matrix = new int[dimension][dimension];
 
-        int lineCount = 0;
-        int numCount;
-        while (linescan.hasNextLine()) {
-            String line = linescan.nextLine();
-            Scanner numScan = new Scanner(line);
-            numScan.useDelimiter("//s+");
-            numCount = 0;
-            while (numScan.hasNext()) {
-                matrix[lineCount][numCount] = numScan.nextInt();
-                numCount++;
+            for (int row = 0; row < dimension; row++) {
+                if (!linescan.hasNextLine()) {
+                    throw new FileNotFoundException("File is not in the expected format");
+                }
+
+                String line = linescan.nextLine();
+                Scanner numscan = new Scanner(line);
+                numscan.useDelimiter("\\s+"); // This apparently can see past all whitespace, spaces and tabs alike...
+                
+                for (int col = 0; col < dimension; col++) {
+                    if (!numscan.hasNextInt()) {
+                        numscan.close();
+                        throw new FileNotFoundException("File is not in the expected format");
+                    }
+
+                    matrix[row][col] = numscan.nextInt();
+                }
+
+                numscan.close();
             }
-            lineCount++;
-            numScan.close();
+
+            return matrix;
+        } catch (java.util.NoSuchElementException | NumberFormatException e) {
+            throw new FileNotFoundException("File is not in the expected format");
+        } finally {
+            linescan.close(); // Been a while since I used finally blocks but they're valid here
         }
-
-        linescan.close();
-        return matrix;
-    }
-
-    private void writeMatrix(int[][] matrix, String filename) throws IOException {
-        File file = new File(filename);
-        file.createNewFile();
-        
-        
     }
 
     /**
-     * Prints a usage statement using two lines for each use case.
-     * Ignores cases where the check flag is used with a size argument
-     * as the latter can be safely ignored as long as the provided
-     * filename exists in the working directory.
+     * 
+     * 
+     * @param matrix Two-dimensional array which represents the magic square
+     * @param filename File name which the magic square will be written to
+     * @throws IOException if the file is not writable or creatable
      */
-    private static void printUsageStatement() {
-        System.out.println("Usage: java MagicSquareDriver -check <filename>");
-        System.out.println("       java MagicSquareDriver -create <filename> <size>");
+    @SuppressWarnings("ConvertToTryWithResources")
+    private void writeMatrix(int[][] matrix, String filename) throws IOException {
+        File file = new File(filename);
+        file.createNewFile(); // Creates a new file if it does not already exist
+        PrintWriter outFile = new PrintWriter(file);
+
+        int n = matrix.length;
+        outFile.println(n);
+        for (int i = 0; i < n; i++) {
+            StringBuilder row = new StringBuilder();
+            for (int j = 0; j < n; j++) {
+                row.append(matrix[i][j]);
+                if (j < n - 1) {
+                    row.append(" ");
+                }
+            }
+            outFile.println(row.toString());
+        }
+
+        outFile.close();
+    }
+
+    /**
+     * 
+     * 
+     * @param dimension The size or dimension by which to generate the magic square
+     * @return A two-dimensional array containing a magic square
+     */
+    private int[][] generateMatrix(int dimension) {
+        // The variable name 'n' from the project description didn't sit right with me
+        int[][] matrix = new int[dimension][dimension];
+        int row = dimension - 1;
+        int col = dimension / 2;
+        int oldRow, oldCol;
+
+        // I don't know how this generates a magic square, but it does.
+        for (int i = 1; i <= dimension * dimension; i++) {
+            matrix[row][col] = i;
+
+            oldRow = row;
+            oldCol = col;
+            row++;
+            col++;
+
+            if (row == dimension) {
+                row = 0;
+            }
+            if (col == dimension) {
+                col = 0;
+            }
+
+            if (matrix[row][col] != 0) {
+                row = oldRow - 1;
+                col = oldCol;
+            }
+        }
+
+        return matrix;
     }
 }
