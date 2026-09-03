@@ -51,6 +51,7 @@ public class MagicSquare implements MagicSquareInterface {
      * @param filename File name for the method to attempt to open and read
      * @throws FileNotFoundException
      */
+    @SuppressWarnings("null")
     public MagicSquare(String filename) throws FileNotFoundException {
         Scanner scan = null; // Variable scope is important ;)
         try {
@@ -87,8 +88,22 @@ public class MagicSquare implements MagicSquareInterface {
             footer = "\nis not a magic square.";
         }
 
-        String matrixString;
-        
+        // Not an ideal solution but it's my best for now
+        String matrixString = "";
+        for (int i = 0; i < matrixArray.length; i++) {
+            matrixString += "\t";
+            for (int j = 0; j < matrixArray.length; j++) {
+                matrixString += matrixArray[i][j];
+                if (j < matrixArray.length - 1) {
+                    matrixString += " ";
+                } else {
+                    matrixString += "\n";
+                }
+            }
+        }
+
+        String finalMatrixString = header + matrixString + footer;
+        return finalMatrixString;
     }
 
     /**
