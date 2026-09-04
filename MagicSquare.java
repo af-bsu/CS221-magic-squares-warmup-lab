@@ -5,14 +5,14 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * 
+ * Reads, validates, and generates magic squares stored in files.
  * 
  * @author Amira Freeman
  */
 @SuppressWarnings("OverridableMethodCallInConstructor")
 public class MagicSquare implements MagicSquareInterface {
-    private int[][] matrixArray;
-    private boolean isValidSquare;
+    private final int[][] matrixArray;
+    private final boolean isValidSquare;
 
     /**
      * MagicSquare constructor for when the user is reading and verifying
@@ -147,7 +147,10 @@ public class MagicSquare implements MagicSquareInterface {
     }
 
     /**
-     * 
+     * Reads matrices from files using the provided filename and returns a
+     * two-dimensional array to save in the instance variable matrixArray.
+     * Can read matrices regardless of the characters and the number of them
+     * between matrix values (including spaces and tabs).
      * 
      * @param filename File name which the magic square is being read from
      * @return A final two-dimensional integer array that represents the matrix (magic square)
@@ -193,7 +196,10 @@ public class MagicSquare implements MagicSquareInterface {
     }
 
     /**
-     * 
+     * Writes the instance's matrix array to a specified file path. Creates the
+     * file if it does not already exist. Writes to the file in the mandatory
+     * format, with the dimension alone on the first line and the matrix array
+     * separated by lines per row. Uses spaces between values.
      * 
      * @param matrix Two-dimensional array which represents the magic square
      * @param filename File name which the magic square will be written to
@@ -222,13 +228,14 @@ public class MagicSquare implements MagicSquareInterface {
     }
 
     /**
-     * 
+     * Generate a space-separated magic square with specified dimensions and
+     * return a two-dimensional array that represents said square.
      * 
      * @param dimension The size or dimension by which to generate the magic square
      * @return A two-dimensional array containing a magic square
      */
     private int[][] generateMatrix(int dimension) {
-        // The variable name 'n' from the project description didn't sit right with me
+        // The variable name 'n' for the dimensions from the instructions didn't sit right with me
         int[][] matrix = new int[dimension][dimension];
         int row = dimension - 1;
         int col = dimension / 2;

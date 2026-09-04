@@ -72,5 +72,6 @@ public interface MagicSquareInterface {
 	 *    
 	 * @return formatted string showing the matrix and whether it is a valid magic square
 	 */
+    @SuppressWarnings("override")
 	public String toString();
 }
