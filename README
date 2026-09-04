@@ -8,46 +8,52 @@
 
 OVERVIEW:
 
- Concisely explain what the program does. If this exceeds a couple
- of sentences, you're going too far. The details go in other
- sections.
+ This program reads magic squares from files in a particular
+ format and determines their validity as a magic square. It
+ can also write magic squares in this same format using an
+ algorithm which uses a given odd-number dimension and file
+ path to write the square to.
 
 
 INCLUDED FILES:
 
- List the files required for the project with a brief
- explanation of why each is included.
-
- e.g.
- * Class1.java - source file
- * Class2.java - source file
+ * MagicSquare.java - mandatory class file
+ * MagicSquareDriver.java - mandatory driver file
+ * MagicSquareInterface.java - mandatory interface file for MagicSquare class
  * README - this file
 
 
 COMPILING AND RUNNING:
 
- Give the command for compiling the program, the command
- for running the program, and any usage instructions the
- user needs.
- 
- These are command-line instructions for a system like onyx.
- They have nothing to do with Eclipse or any other IDE. They
- must be specific - assume the user has Java installed, but
- has no idea how to compile or run a Java program from the
- command-line.
- 
- e.g.
- From the directory containing all source files, compile the
- driver class (and all dependencies) with the command:
- $ javac Class1.java
+ There are no subdirectories present nor needed for this
+ program to run. Only this program's driver class needs to
+ be compiled; all other source files will be compiled
+ automatically. In order to compile it successfully, the
+ command-line's working directory should be the same as
+ the program's directory, then execute the following command:
+ $ javac MagicSquareDriver.java
 
- Run the compiled class file with the command:
- $ java Class1
+ In order for the program to exit successfully, it first
+ needs a valid combination of arguments for validating and
+ generating squares. In order to validate squares, execute
+ the command
+ $ java MagicSquareDriver -check <filename>
+ ... where filename is a valid file path with a correctly
+ formatted pre-existing magic square. In order to generate
+ squares, execute the command
+ $ java MagicSquareDriver -create <filename> <size>
+ ... where filename is the desired write path, which is not
+ required to exist prior to execution, and size is an odd
+ integer that is at least three which is necessary for the
+ algorithm to generate squares.
 
- Console output will give the results after the program finishes.
+ The console which the program is executed in will print the
+ results of both validating and generating squares.
 
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS:
+
+ 
 
  This is the sort of information someone who really wants to
  understand your program - possibly to make future enhancements -
@@ -71,14 +77,58 @@ PROGRAM DESIGN AND IMPORTANT CONCEPTS:
 
 TESTING:
 
- How did you test your program to be sure it works and meets all of the
- requirements? What was the testing strategy? What kinds of tests were run?
- Can your program handle bad input? Is your program  idiot-proof? How do you 
- know? What are the known issues / bugs remaining in your program?
+ In order to test my program, the MagicSquareTest driver,
+ valid squares, and invalid squares were used. I also
+ generated 7 x 7 and 9 x 9 squares and used both the program
+ and manual validation (as in, checking each row, column,
+ and diagonal all equaled the "magic number") to ensure the
+ output was correct.
+
+ It was with both the MagicSquareTest driver and manual
+ checking that I noticed that the provided squares used
+ either spaces or tabs between each value. This forced me to
+ rework my understanding of how the files were formatted and
+ how to handle each, which the Java documentation thankfully
+ helped answer: when scanning between each value, there is a
+ special RegEx combination (\\s+) which, when used in
+ combination with the corresponding Scanner object's
+ useDelimiter() method, can handle all whitespace (blank
+ characters).
+
+ In order to handle bad input, the program prints an error
+ specifying the problem and prints the usage statements. Bad
+ input could mean a variety of things, but in this case it
+ primarily means a lack of arguments, bad flags, or the
+ specified size being invalid. It also means the program will
+ detect and exit if the specified filename from the command-
+ line cannot be read or written to. To my knowledge, there are
+ no edge cases where a possible error isn't handled manually,
+ or the program will exit unexpectedly and print a stack trace.
+
+ This program is certainly programmer-proof, but you can't
+ trust programs which proclaim to be idiot-proof. You can only
+ misuse something so hard, but the limits to that misuse is
+ hard to gauge. This is about as good as it gets in terms of
+ idiot-proofing, and I know this because I tested a very wide
+ variety of possible argument combinations and errors, and
+ caught all I was instructed to catch and all that were not
+ mentioned in the project description.
+
+ Currently, there is *technically* only one known "issue," and
+ it involves how the rows in matrixArray are iterated through
+ in the toString() method, which uses a simple for loop instead
+ of a collection loop. This is only a technical problem because
+ it means the program will run microseconds slower, and I could
+ not care less about optimizing a command-line program if its
+ functionality is not harmed by its current state of being. This
+ "optimization" is not only unnecessary but risks sacrificing
+ readability.
 
 
 DISCUSSION:
+
  
+
  Discuss the issues you encountered during programming (development)
  and testing. What problems did you have? What did you have to research
  and learn on your own? What kinds of errors did you get? How did you 
