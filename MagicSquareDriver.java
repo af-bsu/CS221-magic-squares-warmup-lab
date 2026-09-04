@@ -25,7 +25,6 @@ public class MagicSquareDriver {
             System.out.println("Error: Lack of arguments");
             printUsageStatement();
             System.exit(1);
-            return; // These return statements are to get VSCode to quit whining so much.
         }
 
         String flag = args[0];
@@ -34,11 +33,10 @@ public class MagicSquareDriver {
         MagicSquare square;
 
         // Authenticate flags
-        if ( (!flag.equals("-check") && !flag.equals("-create")) || (flag.equals("-create") && args.length != 3) ) {
+        if ( (!flag.equals("-check") && !flag.equals("-create")) || (flag.equals("-create") && args.length < 3) ) {
             System.out.println("Error: Incorrect use or lack of mandatory flags");
             printUsageStatement();
             System.exit(2);
-            return;
         }
 
         // Checking sequence (size argument gets ignored even if provided)
@@ -50,7 +48,6 @@ public class MagicSquareDriver {
                 System.out.println("Error: File does not exist or is not in the expected format");
                 printUsageStatement();
                 System.exit(3);
-                return;
             }
         }
 
@@ -62,14 +59,13 @@ public class MagicSquareDriver {
                 System.out.println("Error: Specified size for magic square is not a number");
                 printUsageStatement();
                 System.exit(4);
-                return;
+                return; // This return statement is to get the compiler to quit whining about int size not being initialized
             }
 
             if (size % 2 == 0 || size < 3) {
                 System.out.println("Error: Specified size for magic square is either not odd, less than three (3), or both");
                 printUsageStatement();
                 System.exit(5);
-                return;
             }
 
             try {
