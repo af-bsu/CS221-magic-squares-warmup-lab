@@ -5,6 +5,7 @@
 * Amira Freeman
 **************** 
 
+
 OVERVIEW:
 
  Concisely explain what the program does. If this exceeds a couple
@@ -67,6 +68,7 @@ PROGRAM DESIGN AND IMPORTANT CONCEPTS:
  how they work together, why did you design the program this way? What, if 
  anything, could be improved? 
 
+
 TESTING:
 
  How did you test your program to be sure it works and meets all of the
@@ -85,17 +87,3 @@ DISCUSSION:
  What parts of the project did you find challenging? Is there anything
  that finally "clicked" for you in the process of working on this project?
  
- 
-EXTRA CREDIT:
-
- If the project had opportunities for extra credit that you attempted,
- be sure to call it out so the grader does not overlook it.
-
-
-----------------------------------------------------------------------------
-
-All content in a README file is expected to be written in clear English with
-proper grammar, spelling, and punctuation. If you are not a strong writer,
-be sure to get someone else to help you with proofreading. Consider all project
-documentation to be professional writing for your boss and/or potential
-customers.
