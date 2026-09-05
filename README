@@ -39,13 +39,14 @@ COMPILING AND RUNNING:
  the command
  $ java MagicSquareDriver -check <filename>
  ... where filename is a valid file path with a correctly
- formatted pre-existing magic square. In order to generate
- squares, execute the command
+ formatted pre-existing magic square.
+ 
+ In order to generate squares, execute the command
  $ java MagicSquareDriver -create <filename> <size>
  ... where filename is the desired write path, which is not
  required to exist prior to execution, and size is an odd
- integer that is at least three which is necessary for the
- algorithm to generate squares.
+ integer that is at least three (3) which is necessary for
+ the algorithm to generate squares.
 
  The console which the program is executed in will print the
  results of both validating and generating squares.
@@ -53,47 +54,20 @@ COMPILING AND RUNNING:
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS:
 
- 
+ The MagicSquareInterface was provided by the instructions,
+ and was used to create the MagicSquare class. Interfaces
+ cannot declare nor provide constructors, so its primary
+ use in this assignment was mandating three (3) methods
+ that would be implemented in the MagicSquare class.
 
- This is the sort of information someone who really wants to
- understand your program - possibly to make future enhancements -
- would want to know.
-
- Explain the main concepts and organization of your program so that
- the reader can understand how your program works. This is not a repeat
- of javadoc comments or an exhaustive listing of all methods, but an
- explanation of the critical algorithms and object interactions that make
- up the program.
-
- Explain the main responsibilities of the classes and interfaces that make
- up the program. Explain how the classes work together to achieve the program
- goals. If there are critical algorithms that a user should understand, 
- explain them as well.
- 
- If you were responsible for designing the program's classes and choosing
- how they work together, why did you design the program this way? What, if 
- anything, could be improved? 
-
-
-TESTING:
-
- In order to test my program, the MagicSquareTest driver,
- valid squares, and invalid squares were used. I also
- generated 7 x 7 and 9 x 9 squares and used both the program
- and manual validation (as in, checking each row, column,
- and diagonal all equaled the "magic number") to ensure the
- output was correct.
-
- It was with both the MagicSquareTest driver and manual
- checking that I noticed that the provided squares used
- either spaces or tabs between each value. This forced me to
- rework my understanding of how the files were formatted and
- how to handle each, which the Java documentation thankfully
- helped answer: when scanning between each value, there is a
- special RegEx combination (\\s+) which, when used in
- combination with the corresponding Scanner object's
- useDelimiter() method, can handle all whitespace (blank
- characters).
+ The MagicSquare class ended up being the primary provider
+ of all necessary code, which contains 268 readable lines.
+ It handles practically everything from reading and writing
+ files, validating and generating squares, all while
+ managing the instance variables for each MagicSquare object.
+ It implements the aforementioned interface, so it provides
+ functionality for its abstract methods: isMagicSquare(),
+ getMatrix(), and toString().
 
  In order to handle bad input, the program prints an error
  specifying the problem and prints the usage statements. Bad
@@ -105,6 +79,46 @@ TESTING:
  no edge cases where a possible error isn't handled manually,
  or the program will exit unexpectedly and print a stack trace.
 
+ During the validation phase if it is chosen, it walks through
+ a couple checks to ensure it's even a square to begin with.
+ It first confirms every row is the right length, then checks
+ that each value is only seen once with a boolean[] array sized
+ to the dimension squared plus one (1). This array is indexed
+ by value to represent each possible value; if a value has
+ already been marked as seen, then it is automatically not a
+ magic square. The rest of the phase is fairly straightforward,
+ as it checks that each row, column, and possible diagonal all
+ sum up to the magic number.
+
+ The generation phase uses what I learned is a "Siamese-method
+ placement algorithm." There is a small caveat though, in that
+ it does not begin in the top-middle square as a typical Siamese
+ square would; it instead begins in the bottom-middle square.
+ The steps are also similar but not identical: instead of
+ advancing a square to the top-right, it advances squares to the
+ bottom-right. The process is otherwise the same, wrapping around
+ row or column to the opposite edge if it falls off the matrix.
+ If the next square is already filled, it moves up one row from
+ the previous square.
+
+ If anyone is to redesign this, I would reconsider if the
+ inclusion of the interface is entirely necessary, unless you're
+ future-proofing for a later project. The MagicSquare class is
+ also handling four (4) unrelated tasks (namely reading, writing,
+ validating, and generating squares), but the interface's required
+ constructors more or less forced that structure.
+
+
+
+TESTING:
+
+ In order to test my program, the MagicSquareTest driver,
+ valid squares, and invalid squares were used. I also
+ generated 7 x 7 and 9 x 9 squares and used both the program
+ and manual validation (as in, checking each row, column,
+ and diagonal all equaled the "magic number") to ensure the
+ output was correct.
+
  This program is certainly programmer-proof, but you can't
  trust programs which proclaim to be idiot-proof. You can only
  misuse something so hard, but the limits to that misuse is
@@ -114,26 +128,50 @@ TESTING:
  caught all I was instructed to catch and all that were not
  mentioned in the project description.
 
- Currently, there is *technically* only one known "issue," and
- it involves how the rows in matrixArray are iterated through
+ Currently, there is *technically* only one (1) known "issue,"
+ and it involves how the rows in matrixArray are iterated through
  in the toString() method, which uses a simple for loop instead
  of a collection loop. This is only a technical problem because
  it means the program will run microseconds slower, and I could
  not care less about optimizing a command-line program if its
  functionality is not harmed by its current state of being. This
- "optimization" is not only unnecessary but risks sacrificing
- readability.
+ "optimization" is also not only unnecessary but risks
+ sacrificing readability.
 
 
 DISCUSSION:
 
- 
+ One of the trickiest bugs actually involved my driver class
+ rather than the MagicSquare class, more particularly handling
+ command-line arguments. My first instinct in creating the file
+ was to organize the program such that my variable declarations
+ were at the top for readability. However, when beginning my
+ first tests, it often crashed with a stack trace instead of a
+ known error. This was because I was assigning the values of
+ these variables before I confirmed that there were enough
+ arguments to begin with, sometimes leading me to try to assign
+ a completely non-existent value to a variable, throwing an
+ ArrayIndexOutOfBounds exception. Perhaps this is a rookie
+ mistake, but to me it was a valuable one. The fix was to break
+ up my argument handling (between checking args.length and the
+ flags) so that it isn't possible for the program to continue
+ without enough arguments.
 
- Discuss the issues you encountered during programming (development)
- and testing. What problems did you have? What did you have to research
- and learn on your own? What kinds of errors did you get? How did you 
- fix them?
- 
- What parts of the project did you find challenging? Is there anything
- that finally "clicked" for you in the process of working on this project?
- 
+ I also noticed early on in testing that not every magic square
+ file was formatted the same. From first impressions, I thought
+ each file used spaces to separate each value. However, some
+ files use tab characters, causing the program to throw an error
+ stating that the file was not in an expected format (which was
+ true!). This forced me to rework my understanding of how the
+ files were formatted and how to handle each, which the Java
+ documentation thankfully helped answer: when scanning between
+ each value, there is a special RegEx combination (\\s+) which,
+ when used with the value Scanner object's useDelimiter() method,
+ can handle all whitespace until the next value.
+
+ I will say that by the end of this assignment, the only segment
+ of code I didn't understand (until further research, that is) was
+ the algorithm for generating magic squares. I could trace by hand
+ why each step made sense to fill each square on a small scale, but
+ that became harder with larger and larger squares.
+

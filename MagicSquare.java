@@ -241,7 +241,7 @@ public class MagicSquare implements MagicSquareInterface {
         int col = dimension / 2;
         int oldRow, oldCol;
 
-        // I don't know how this generates a magic square, but it does.
+        // Researched this algorithm... this is nearly identical to the Siamese-method way of creating magic squares
         for (int i = 1; i <= dimension * dimension; i++) {
             matrix[row][col] = i;
 
